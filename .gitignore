@@ -1,0 +1,43 @@
+# ============================================
+#  ЧТО НИКОГДА НЕ УХОДИТ В РЕПОЗИТОРИЙ
+#  Правило курса: если файл нельзя отправить внешнему
+#  подрядчику по почте — он не идёт сюда.
+# ============================================
+
+# --- данные ---
+*.xlsx
+*.xls
+*.csv
+*.docx
+*.doc
+*.pdf
+/data/
+/выгрузки/
+/private/
+moya-rutina/dannye/
+
+# ...но учебная синтетика из uchebnye-dannye/ нужна всем
+!uchebnye-dannye/*.csv
+!uchebnye-dannye/*.xlsx
+!uchebnye-dannye/*.docx
+
+# --- секреты ---
+.env
+.env.*
+*.key
+*.pem
+*_secret*
+credentials*
+mcp.json
+
+# --- мусор системы ---
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+
+# --- служебное ---
+.venv/
+node_modules/
+__pycache__/
+.cache/

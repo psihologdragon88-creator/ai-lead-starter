@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Справочник по Git · МинИИстерство</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas:#F3F4F6; --surface:#FFFFFF; --ink:#1C1917; --secondary:#57534E;
+    --mute:#A8A29E; --line:#E7E5E4; --accent:#0F766E; --accent-soft:#CCFBF1;
+    --warn:#B45309; --warn-soft:#FEF3C7; --danger:#9F1239; --danger-soft:#FFE4E6;
+    --font-display:"Fraunces",Georgia,serif;
+    --font-body:"IBM Plex Sans",system-ui,sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--canvas);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:56px 32px 96px}
+  .meta-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:28px}
+  .meta-top .brand{color:var(--accent)}
+  h1{font-family:var(--font-display);font-size:clamp(2rem,4vw,2.9rem);font-weight:600;line-height:1.08;letter-spacing:-.02em;margin-bottom:14px}
+  .sub{font-size:1.08rem;color:var(--secondary);max-width:88%}
+  .sub strong{color:var(--ink);font-weight:600}
+  section{margin-top:50px;scroll-margin-top:20px}
+  .section-tag{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:16px;border-top:1px solid var(--line);padding-top:14px}
+  h2{font-family:var(--font-display);font-size:1.8rem;font-weight:600;line-height:1.15;letter-spacing:-.015em;margin:0 0 10px}
+  h2 .n{color:var(--accent);font-weight:700;margin-right:12px}
+  h3{font-size:1.02rem;font-weight:600;color:var(--accent);margin:26px 0 10px}
+  p{margin:10px 0;font-size:1rem;color:var(--secondary)}
+  p strong,td strong,li strong{color:var(--ink)}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid #99F6E4}
+  code{font-family:var(--font-mono);font-size:.88em;background:var(--line);color:var(--ink);padding:1px 6px;border-radius:3px}
+  table{width:100%;border-collapse:collapse;margin-top:16px;font-size:.93rem;background:var(--surface)}
+  th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--accent);font-weight:600;font-size:.71rem;text-transform:uppercase;letter-spacing:.09em}
+  .term-cell{font-weight:600;color:var(--ink)}
+  ul.clean,ol.clean{list-style:none;margin-top:8px}
+  ul.clean li{position:relative;padding:5px 0 5px 20px;font-size:.98rem;color:var(--secondary)}
+  ul.clean li::before{content:"—";position:absolute;left:0;color:var(--accent);font-weight:700}
+  ol.clean{counter-reset:c}
+  ol.clean li{position:relative;padding:5px 0 5px 28px;font-size:.98rem;color:var(--secondary);counter-increment:c}
+  ol.clean li::before{content:counter(c) ".";position:absolute;left:0;color:var(--accent);font-weight:700;font-family:var(--font-mono);font-size:.9em}
+  .chip{display:inline-block;padding:2px 9px;border-radius:4px;font-size:.72rem;font-weight:600;margin:2px 4px 0 0;white-space:nowrap}
+  .chip.teal{background:var(--accent-soft);color:var(--accent)}
+  .chip.warn{background:var(--warn-soft);color:var(--warn)}
+  .chip.mute{background:var(--line);color:var(--secondary)}
+  .chip.danger{background:var(--danger-soft);color:var(--danger)}
+  .insight{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:4px;padding:16px 18px;margin-top:16px;font-size:.99rem;color:var(--secondary)}
+  .insight b{color:var(--ink)}
+  .insight.warn{border-left-color:var(--warn)}
+  .insight.danger{border-left-color:var(--danger)}
+  .anchor{margin-top:16px;background:var(--accent-soft);border:1px solid #99F6E4;border-radius:8px;padding:14px 16px}
+  .anchor .lbl{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px}
+  .anchor p{color:#134E4A;margin:4px 0}
+  .anchor strong{color:var(--ink)}
+  pre{font-family:var(--font-mono);font-size:.85rem;line-height:1.75;background:#1C1917;color:#E7E5E4;border-radius:6px;padding:13px 16px;margin:10px 0;overflow-x:auto}
+  pre .c{color:#A8A29E}
+  pre .k{color:#5EEAD4}
+  /* карточка команды */
+  .cmd{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px 22px;margin-top:16px;border-left:3px solid var(--accent)}
+  .cmd.star{border-left-width:5px}
+  .cmd .ch{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+  .cmd .name{font-family:var(--font-mono);font-size:1.12rem;font-weight:600;color:var(--ink)}
+  .cmd .what{font-size:.95rem;color:var(--mute)}
+  .cmd .when{font-size:.99rem;color:var(--secondary);margin-top:8px}
+  .cmd .when b{color:var(--ink)}
+  .cmd .ana{font-size:.95rem;color:#134E4A;background:#F0FDFA;border-radius:4px;padding:8px 12px;margin-top:10px}
+  .cmd .ana b{color:var(--accent)}
+  .cmd .ui{font-size:.92rem;color:var(--secondary);border-top:1px dashed var(--line);margin-top:12px;padding-top:10px}
+  .cmd .ui b{color:var(--ink)}
+  .fix{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin-top:14px;border-left:3px solid var(--warn)}
+  .fix .q{font-weight:600;color:var(--ink);font-size:1.01rem}
+  .fix .a{font-size:.97rem;color:var(--secondary);margin-top:6px}
+  .fix .a b{color:var(--ink)}
+  .toc{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px 24px;margin-top:28px}
+  .toc ul{list-style:none;columns:2;column-gap:32px}
+  .toc li{padding:4px 0;font-size:.94rem;break-inside:avoid}
+  .toc a{color:var(--secondary);border-bottom:1px solid transparent}
+  .toc a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+  .toc .grp{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:600;padding-top:12px}
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+  .flow .z{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+  .flow .z .t{font-weight:600;color:var(--ink);font-size:.97rem;margin-bottom:6px}
+  .flow .z .d{font-size:.88rem;color:var(--secondary)}
+  .flow .z .m{font-family:var(--font-mono);font-size:.8rem;color:var(--accent);margin-top:8px;display:block}
+  .arrows{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px;font-family:var(--font-mono);font-size:.82rem;color:var(--accent);text-align:center}
+  @media (max-width:820px){
+    .wrap{padding:36px 18px 72px}
+    .toc ul{columns:1}
+    .flow,.arrows{grid-template-columns:1fr}
+    .arrows{display:none}
+    .sub{max-width:100%}
+    h1{font-size:1.85rem}
+  }
+  @media print{body{background:#fff}.cmd,.fix,table{break-inside:avoid}.toc{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="meta-top">
+    <span class="brand">МинИИстерство · этап 1</span>
+    <span>Справочник по Git · держите открытым</span>
+  </div>
+
+  <h1>Git: 12 команд, которых хватит на всё</h1>
+  <p class="sub">Этот файл <strong>не читают подряд</strong>. Его открывают, когда что-то не получается, и ищут свою ситуацию.<br><br>Здесь только то, что реально понадобится вам на курсе и в работе. Остальные примерно полторы тысячи команд Git существуют, но за пять уроков вы к ним не подойдёте и правильно сделаете.<br><br><strong>Если вы работаете мышью в Cursor</strong> — у каждой команды написано, какая это кнопка. Терминал знать не обязательно.</p>
+
+  <div class="toc">
+    <ul>
+      <li class="grp">Основа</li>
+      <li><a href="#map">Карта: где живут ваши файлы</a></li>
+      <li><a href="#once">Настроить один раз</a></li>
+      <li class="grp">Ежедневные — 90% работы</li>
+      <li><a href="#status">status — что сейчас происходит</a></li>
+      <li><a href="#clone">clone — забрать пространство к себе</a></li>
+      <li><a href="#add">add — выложить на стол</a></li>
+      <li><a href="#commit">commit — сделать снимок</a></li>
+      <li><a href="#push">push — отправить в общий репозиторий</a></li>
+      <li><a href="#pull">pull — забрать свежее</a></li>
+      <li class="grp">Смотреть и откатывать</li>
+      <li><a href="#log">log — история</a></li>
+      <li><a href="#diff">diff — что именно изменилось</a></li>
+      <li><a href="#restore">restore — вернуть файл как был</a></li>
+      <li><a href="#revert">revert — отменить готовый коммит</a></li>
+      <li class="grp">Ветки</li>
+      <li><a href="#branch">branch + switch — параллельный черновик</a></li>
+      <li><a href="#merge">merge — свести ветки</a></li>
+      <li class="grp">Аварийка</li>
+      <li><a href="#fixes">Я сломал — что делать</a></li>
+      <li><a href="#never">Что не трогать никогда</a></li>
+      <li class="grp">Площадки</li>
+      <li><a href="#gitlab">GitLab и GitHub: что меняется</a></li>
+      <li><a href="#cheat">Шпаргалка одной страницей</a></li>
+    </ul>
+  </div>
+
+  <!-- ===== КАРТА ===== -->
+  <section id="map">
+    <div class="section-tag">Понять один раз</div>
+    <h2><span class="n">01</span>Карта: где живут ваши файлы</h2>
+    <p>Почти все вопросы по Git — это на самом деле вопрос «а где сейчас мой файл». Областей всего четыре, и команды просто перемещают файлы между ними.</p>
+    <div class="flow">
+      <div class="z"><div class="t">1. Рабочая папка</div><div class="d">Файлы как есть прямо сейчас. Git видит изменения, но ничего с ними не делает</div><span class="m">панель: Changes</span></div>
+      <div class="z"><div class="t">2. Индекс</div><div class="d">«Стол перед сканером»: то, что вы выложили и что попадёт в следующий снимок</div><span class="m">панель: Staged Changes</span></div>
+      <div class="z"><div class="t">3. История</div><div class="d">Сделанные и подписанные снимки. Лежат у вас на компьютере</div><span class="m">панель: Graph / History</span></div>
+      <div class="z"><div class="t">4. Удалённый репозиторий</div><div class="d">Копия истории на сервере. Её видят коллеги, на неё есть ссылка</div><span class="m">GitLab / GitHub</span></div>
+    </div>
+    <div class="arrows">
+      <div>— add →</div><div>— commit →</div><div>— push →</div><div>← pull —</div>
+    </div>
+    <div class="anchor">
+      <div class="lbl">Главное следствие</div>
+      <p style="margin:0"><strong>Сделать коммит ≠ отправить.</strong> После коммита ваша работа существует только на вашем компьютере. Чтобы она появилась у коллег и по ссылке — нужен <code>push</code>. Это ошибка номер один у всех, кто начинает.</p>
+    </div>
+    <div class="insight warn">
+      <b>Не думайте про Git как про Яндекс.Диск.</b> Диск синхронизирует сам и постоянно. Git — только когда вы явно сказали. Это главное отличие, и именно из-за неверной аналогии люди потом удивляются, почему на сервере пусто.
+    </div>
+  </section>
+
+  <!-- ===== ОДИН РАЗ ===== -->
+  <section id="once">
+    <div class="section-tag">Настройка</div>
+    <h2><span class="n">02</span>Настроить один раз на компьютере</h2>
+    <p>Без этого не пройдёт самый первый коммит: Git откажется подписывать снимок, не зная, кто его делает.</p>
+    <pre>git config --global user.name <span class="k">"Имя Фамилия"</span>
+git config --global user.email <span class="k">"почта@company.ru"</span></pre>
+    <p>Проверить, что записалось:</p>
+    <pre>git config --global --list</pre>
+    <div class="insight">
+      Почта здесь нужна не для писем, а чтобы сервер связал ваши коммиты с вашей учётной записью. <b>Указывайте ту же почту, что в GitLab или GitHub</b> — иначе ваши коммиты будут числиться за неизвестным автором.
+    </div>
+  </section>
+
+  <!-- ===== ЕЖЕДНЕВНЫЕ ===== -->
+  <section id="daily">
+    <div class="section-tag">Девяносто процентов работы</div>
+    <h2><span class="n">03</span>Шесть ежедневных команд</h2>
+
+    <div class="cmd star" id="status">
+      <div class="ch"><span class="name">git status</span><span class="what">что сейчас происходит</span><span class="chip teal">самая частая</span></div>
+      <div class="when">Показывает: в какой вы ветке, какие файлы изменились, что уже выложено на «стол», а что нет. <b>Если вы не понимаете, что происходит — начните с неё.</b> В девяти случаях из десяти ответ будет прямо в выводе, вместе с подсказкой, какую команду выполнить дальше.</div>
+      <pre>git status</pre>
+      <div class="ana"><b>Аналогия:</b> посмотреть на свой рабочий стол и понять, что на нём сейчас лежит.</div>
+      <div class="ui"><b>В Cursor:</b> это и есть панель Source Control — <code>Ctrl+Shift+G</code> / <code>Cmd+Shift+G</code>. Разделы <span style="font-family:var(--font-mono)">Changes</span> и <span style="font-family:var(--font-mono)">Staged Changes</span> — то же самое, но картинкой.</div>
+    </div>
+
+    <div class="cmd" id="clone">
+      <div class="ch"><span class="name">git clone</span><span class="what">забрать пространство к себе</span></div>
+      <div class="when">Скачивает репозиторий с сервера на ваш компьютер — целиком, вместе со всей историей. <b>Это первая команда курса:</b> так вы получите стартовое пространство с правилами, скиллами и этим справочником.</div>
+      <pre><span class="c"># GitLab</span>
+git clone https://gitlab.company.ru/группа/ai-lead-starter.git
+
+<span class="c"># GitHub</span>
+git clone https://github.com/организация/ai-lead-starter.git</pre>
+      <div class="ana"><b>Аналогия:</b> скачать себе общую папку проекта вместе с журналом всех её правок.</div>
+      <div class="ui"><b>В Cursor:</b> палитра команд <code>Ctrl/Cmd+Shift+P</code> → <span style="font-family:var(--font-mono)">Git: Clone</span> → вставить ссылку → выбрать, куда положить.</div>
+    </div>
+
+    <div class="cmd" id="add">
+      <div class="ch"><span class="name">git add</span><span class="what">выложить на стол</span></div>
+      <div class="when">Помечает файлы как готовые к снимку. Нужна, потому что вы не всегда хотите зафиксировать <b>всё</b>, что изменили: часть работы может быть ещё сырой.</div>
+      <pre><span class="c"># конкретный файл</span>
+git add README.md
+
+<span class="c"># всё, что изменилось в текущей папке</span>
+git add .</pre>
+      <div class="ana"><b>Аналогия:</b> выложить на стол перед сканером те листы, которые собираетесь сфотографировать. Остальные остаются в стопке.</div>
+      <div class="ui"><b>В Cursor:</b> плюсик <code>+</code> справа от имени файла в панели Source Control. Файл переезжает в <span style="font-family:var(--font-mono)">Staged Changes</span>.</div>
+    </div>
+
+    <div class="cmd star" id="commit">
+      <div class="ch"><span class="name">git commit -m</span><span class="what">сделать снимок</span><span class="chip teal">ядро</span></div>
+      <div class="when">Сохраняет состояние выложенных файлов в историю — навсегда и с подписью. <code>-m</code> значит message: <b>сообщение о том, что и зачем вы поменяли</b>. По нему вы потом найдёте нужный момент.</div>
+      <pre>git commit -m <span class="k">"описал свою рутину в README"</span></pre>
+      <div class="ana"><b>Аналогия:</b> подписанная версия документа при согласовании. Не «сохранить файл», а «зафиксировать законченный смысловой шаг».</div>
+      <div class="ui"><b>В Cursor:</b> написать сообщение в поле сверху и нажать галочку <span style="font-family:var(--font-mono)">Commit</span>. Значок искры рядом с полем сгенерирует сообщение сам — <b>прочитайте, что он написал, и поправьте</b>: сообщение пишется для людей.</div>
+    </div>
+
+    <div class="cmd star" id="push">
+      <div class="ch"><span class="name">git push</span><span class="what">отправить в общий репозиторий</span><span class="chip teal">без неё работы не существует</span></div>
+      <div class="when">Отправляет ваши коммиты на сервер. <b>До push ваша работа есть только у вас.</b> Коллега её не видит, ссылка не работает, при потере ноутбука всё пропадает.</div>
+      <pre><span class="c"># обычно достаточно</span>
+git push
+
+<span class="c"># в первый раз для новой ветки</span>
+git push -u origin имя-ветки</pre>
+      <div class="ana"><b>Аналогия:</b> сохранить у себя — это ещё не отправить. Push и есть «отправить».</div>
+      <div class="ui"><b>В Cursor:</b> кнопка <span style="font-family:var(--font-mono)">Sync Changes</span> (или <span style="font-family:var(--font-mono)">Publish Branch</span> в самый первый раз).</div>
+      <div class="insight" style="margin-top:12px"><b>origin</b> — это просто короткое имя вашего сервера, чтобы не писать длинный адрес каждый раз. Посмотреть, куда именно он указывает: <code>git remote -v</code>.</div>
+    </div>
+
+    <div class="cmd" id="pull">
+      <div class="ch"><span class="name">git pull</span><span class="what">забрать свежее</span></div>
+      <div class="when">Скачивает изменения, которые появились на сервере, пока вы работали. <b>Привычка: начинать работу с pull.</b> Иначе вы правите устаревшую версию и потом разбираетесь с конфликтами.</div>
+      <pre>git pull</pre>
+      <div class="ana"><b>Аналогия:</b> перед правкой методички проверить, не выложил ли кто-то новую редакцию.</div>
+      <div class="ui"><b>В Cursor:</b> та же кнопка <span style="font-family:var(--font-mono)">Sync Changes</span> — она сначала забирает чужое, потом отправляет ваше.</div>
+    </div>
+  </section>
+
+  <!-- ===== СМОТРЕТЬ И ОТКАТЫВАТЬ ===== -->
+  <section id="look">
+    <div class="section-tag">Ради этого всё и затевалось</div>
+    <h2><span class="n">04</span>Посмотреть и откатить</h2>
+    <p>Эти четыре команды — главная причина, по которой вы вообще ставите Git, когда работаете с ИИ-агентом. Агент правит файлы целиком, и «отменить» внутри него нет.</p>
+
+    <div class="cmd" id="log">
+      <div class="ch"><span class="name">git log</span><span class="what">история снимков</span></div>
+      <div class="when">Показывает, кто, когда и что коммитил. У каждого коммита есть уникальный номер — <b>хэш</b>, по нему к нему можно вернуться.</div>
+      <pre><span class="c"># коротко: по строке на коммит</span>
+git log --oneline -10</pre>
+      <div class="ana"><b>Аналогия:</b> журнал изменений документа.</div>
+      <div class="ui"><b>В Cursor:</b> вкладка Graph / History в панели Source Control.</div>
+    </div>
+
+    <div class="cmd star" id="diff">
+      <div class="ch"><span class="name">git diff</span><span class="what">что именно изменилось</span><span class="chip teal">после работы агента</span></div>
+      <div class="when">Показывает построчно, что поменялось с последнего снимка. <b>Ваш главный инструмент контроля за агентом:</b> он сказал «готово», вы смотрите, что он на самом деле сделал, — до того как это зафиксировать.</div>
+      <pre><span class="c"># что изменилось и ещё не выложено на стол</span>
+git diff
+
+<span class="c"># конкретный файл</span>
+git diff AGENTS.md</pre>
+      <div class="ana"><b>Аналогия:</b> режим «отображать исправления» в документе.</div>
+      <div class="ui"><b>В Cursor:</b> просто кликнуть на файл в панели Source Control — откроется сравнение «было / стало» двумя колонками. Удобнее, чем в терминале.</div>
+    </div>
+
+    <div class="cmd star" id="restore">
+      <div class="ch"><span class="name">git restore</span><span class="what">вернуть файл как был</span><span class="chip danger">спасательный круг</span></div>
+      <div class="when"><b>Агент переписал файл, и вы хотите обратно.</b> Возвращает файл к состоянию последнего коммита. Изменения, которых вы не коммитили, при этом теряются — на то и расчёт.</div>
+      <pre><span class="c"># вернуть один файл</span>
+git restore имя-файла.md
+
+<span class="c"># убрать файл со «стола», не трогая его содержимое</span>
+git restore --staged имя-файла.md</pre>
+      <div class="ana"><b>Аналогия:</b> закрыть документ без сохранения.</div>
+      <div class="ui"><b>В Cursor:</b> значок разворота (<span style="font-family:var(--font-mono)">Discard Changes</span>) напротив файла в панели Source Control.</div>
+      <div class="insight warn" style="margin-top:12px"><b>Отсюда простое рабочее правило:</b> перед тем как дать агенту задачу — сделайте коммит. Тогда откат всегда возможен и занимает две секунды. Без коммита откатывать не к чему.</div>
+    </div>
+
+    <div class="cmd" id="revert">
+      <div class="ch"><span class="name">git revert</span><span class="what">отменить уже сделанный коммит</span></div>
+      <div class="when">Когда плохое изменение уже закоммичено и, возможно, отправлено. Создаёт <b>новый</b> коммит, который отменяет указанный: что добавляли — удалится, что удаляли — вернётся.</div>
+      <pre><span class="c"># сначала находим номер коммита</span>
+git log --oneline -10
+
+<span class="c"># потом отменяем его</span>
+git revert a1b2c3d</pre>
+      <div class="ana"><b>Аналогия:</b> сторнирующая проводка. Не стираем прошлое, а выпускаем документ, который его отменяет.</div>
+      <div class="insight" style="margin-top:12px">Почему именно так, а не «удалить коммит»: <b>история остаётся целой</b>, и у коллег ничего не ломается. Оба коммита — и ошибочный, и отменяющий — видны. Это правильно и безопасно.</div>
+    </div>
+  </section>
+
+  <!-- ===== ВЕТКИ ===== -->
+  <section id="branches">
+    <div class="section-tag">Когда работаете не один</div>
+    <h2><span class="n">05</span>Ветки: параллельные черновики</h2>
+    <p>На курсе ветки обязательны только треку «Ускорение». Но понимать, что это, стоит всем: в общем репозитории вы столкнётесь с ними в первый же день.</p>
+
+    <div class="cmd" id="branch">
+      <div class="ch"><span class="name">git branch</span> <span class="name" style="color:var(--mute)">/</span> <span class="name">git switch</span><span class="what">создать и перейти</span></div>
+      <div class="when">Ветка — отдельная последовательность снимков, отходящая от общей. Вы правите свой черновик, не трогая утверждённую версию. Основная ветка обычно называется <code>main</code> или <code>master</code>.</div>
+      <pre><span class="c"># создать и сразу перейти — обычно нужно именно это</span>
+git switch -c моя-рутина
+
+<span class="c"># вернуться на основную</span>
+git switch main
+
+<span class="c"># посмотреть, какие ветки есть</span>
+git branch</pre>
+      <div class="ana"><b>Аналогия:</b> переработка модуля программы в отдельном черновике. Не получилось — выбросили черновик, утверждённая версия цела.</div>
+      <div class="ui"><b>В Cursor:</b> имя текущей ветки — в левом нижнем углу. Клик по нему открывает список веток и создание новой.</div>
+      <div class="insight" style="margin-top:12px">В старых инструкциях для этого используется <code>git checkout</code>. Он до сих пор работает, но делает <b>слишком много разного</b> — и переключает ветки, и откатывает файлы. Поэтому его разделили на два понятных: <code>switch</code> для веток и <code>restore</code> для файлов. Берите новые.</div>
+    </div>
+
+    <div class="cmd" id="merge">
+      <div class="ch"><span class="name">git merge</span><span class="what">свести ветки в одну</span></div>
+      <div class="when">Когда работа в вашей ветке закончена и её нужно вернуть в основную.</div>
+      <pre><span class="c"># переходим туда, КУДА вливаем</span>
+git switch main
+git pull
+git merge моя-рутина</pre>
+      <div class="ana"><b>Аналогия:</b> свести правки двух рецензентов в один документ. Правили разные разделы — сведётся само. Правили один абзац — система остановится и спросит вас. Это называется конфликт, и это нормальная ситуация, а не поломка.</div>
+      <div class="ui"><b>В Cursor:</b> при конфликте открывается экран сравнения с кнопками «взять эту версию / ту / обе». Там же есть <span style="font-family:var(--font-mono)">Resolve in Chat</span> — можно отдать разбор агенту.</div>
+      <div class="insight warn" style="margin-top:12px"><b>На практике в команде вы будете делать не merge руками, а merge request</b> (в GitLab) или pull request (в GitHub) — через интерфейс сайта. Вы отправляете ветку кнопкой <code>push</code>, а дальше нажимаете «создать merge request», коллега смотрит изменения и подтверждает. Так правки проходят через проверку человеком.</div>
+    </div>
+  </section>
+
+  <!-- ===== АВАРИЙКА ===== -->
+  <section id="fixes">
+    <div class="section-tag">Аварийка</div>
+    <h2><span class="n">06</span>Я сломал — что делать</h2>
+    <p>Ситуации в порядке частоты. Почти всё чинится одной строкой.</p>
+
+    <div class="fix">
+      <div class="q">Коммит не проходит, пишет что-то вроде «please tell me who you are»</div>
+      <div class="a">Не настроены имя и почта. Выполните две строки из <a href="#once">раздела 02</a> — это делается один раз на компьютере, больше не повторится.</div>
+    </div>
+
+    <div class="fix">
+      <div class="q">Агент переписал файл, хочу вернуть как было</div>
+      <div class="a"><b>Если вы ещё не коммитили после его правок</b> — <code>git restore имя-файла</code>, либо значок разворота напротив файла в Cursor. Секунда, и файл вернулся к последнему снимку.<br><b>Если уже закоммитили</b> — найдите предыдущий коммит через <code>git log --oneline</code> и верните оттуда: <code>git restore --source=a1b2c3d имя-файла</code>.</div>
+    </div>
+
+    <div class="fix">
+      <div class="q">Случайно выложил на «стол» лишний файл</div>
+      <div class="a"><code>git restore --staged имя-файла</code>. Файл уйдёт из <span style="font-family:var(--font-mono)">Staged Changes</span>, но его содержимое не изменится. В Cursor — значок минуса напротив файла.</div>
+    </div>
+
+    <div class="fix">
+      <div class="q">Push отклонён: «updates were rejected» / «кто-то уже запушил»</div>
+      <div class="a">На сервере появились изменения, которых нет у вас. Сначала заберите их, потом отправляйте: <code>git pull</code>, разберитесь с конфликтом, если он возникнет, затем <code>git push</code>. <b>Никогда не решайте это через <code>push --force</code></b> — так вы сотрёте чужую работу.</div>
+    </div>
+
+    <div class="fix">
+      <div class="q">Push просит логин и пароль или сразу отказывает</div>
+      <div class="a">Не выполнен вход. Обычный пароль от учётной записи для push давно не работает — нужен вход через браузер или токен доступа.<br><b>В Cursor:</b> палитра команд <code>Ctrl/Cmd+Shift+P</code> → <span style="font-family:var(--font-mono)">GitHub: Sign in</span>, для GitLab — токен, выданный администратором, вводится вместо пароля.</div>
+    </div>
+
+    <div class="fix">
+      <div class="q">В панели изменений внезапно сотни файлов</div>
+      <div class="a">Репозиторий создан не в той папке — обычно в домашней или в папке, где лежат все проекты сразу. Проверьте заголовок окна. Если папка не та: закрыть, удалить из неё скрытую папку <code>.git</code>, открыть нужную и начать заново.</div>
+    </div>
+
+    <div class="fix">
+      <div class="q">Написал ерунду в сообщении коммита</div>
+      <div class="a">Если вы <b>ещё не сделали push</b> — <code>git commit --amend -m "правильное сообщение"</code>. Если уже отправили на сервер — оставьте как есть: переписывание отправленной истории ломает работу коллегам, а неудачное сообщение никому не вредит.</div>
+    </div>
+
+    <div class="fix">
+      <div class="q">Не понимаю, где я и что происходит</div>
+      <div class="a"><code>git status</code>, затем <code>git log --oneline -5</code>. Первая скажет, в какой вы ветке и что не зафиксировано, вторая — на чём вы остановились. <b>Вывод <code>git status</code> почти всегда содержит подсказку, какую команду выполнить дальше</b> — его стоит читать, а не пролистывать.</div>
+    </div>
+
+    <div class="fix" style="border-left-color:var(--danger)">
+      <div class="q">Закоммитил файл с реальными данными или паролем</div>
+      <div class="a"><b>Порядок строго такой:</b><br>
+      1. Если это пароль, ключ или токен — <b>сначала смените его</b> в системе, которая его выдала. С момента попадания в репозиторий он считается скомпрометированным.<br>
+      2. Только потом чистите репозиторий.<br>
+      3. Если это персональные данные — зафиксируйте факт и сообщите ответственному, не решайте в одиночку.<br><br>
+      <b>«Я удалил файл следующим коммитом» не помогает:</b> старый коммит остаётся в истории и доступен по прямой ссылке. На курсе самый быстрый способ — снести учебный репозиторий целиком и создать заново, там у вас три файла.</div>
+    </div>
+  </section>
+
+  <!-- ===== НЕ ТРОГАТЬ ===== -->
+  <section id="never">
+    <div class="section-tag">Граница</div>
+    <h2><span class="n">07</span>Что не трогать, пока не понадобится по-настоящему</h2>
+    <p>Эти команды вы встретите в статьях и видео. Они не «плохие» — просто у них есть последствия, которые новичок не предвидит. Для всего, что вы будете делать на курсе, они не нужны.</p>
+    <table>
+      <thead><tr><th>Команда</th><th>Что делает</th><th>Почему не сейчас</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="term-cell">git rebase</td>
+          <td>Переносит коммиты, перестраивая историю</td>
+          <td><strong>Переписывает историю.</strong> В видео и статьях его часто советуют как способ влить ветку в основную. Для команды это спорная практика даже среди разработчиков, а для новичка — верный способ потерять работу. Вам нужен <code>merge</code> или merge request через интерфейс</td>
+        </tr>
+        <tr>
+          <td class="term-cell">git reset --hard</td>
+          <td>Откатывает всё к указанному состоянию</td>
+          <td>Молча удаляет незакоммиченную работу без подтверждения. Для отката одного файла есть безопасный <code>git restore</code>, для отмены коммита — <code>git revert</code></td>
+        </tr>
+        <tr>
+          <td class="term-cell">git push --force</td>
+          <td>Перезаписывает историю на сервере</td>
+          <td><strong>Стирает чужие коммиты.</strong> Если push отклонён — это не повод форсить, а сигнал сделать <code>pull</code></td>
+        </tr>
+        <tr>
+          <td class="term-cell">git cherry-pick</td>
+          <td>Переносит отдельный коммит из ветки в ветку</td>
+          <td>Полезная вещь, но нужна при сложной работе с ветками. У вас такой работы на этапе 1 не будет</td>
+        </tr>
+        <tr>
+          <td class="term-cell">git stash</td>
+          <td>Временно прячет незавершённые правки</td>
+          <td>Удобно, но легко забыть, что вы что-то спрятали, и потерять. Проще сделать обычный коммит с пометкой «в работе»</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="insight">
+      <b>Общее правило безопасности.</b> Команды, которые <b>добавляют</b> в историю (commit, revert, merge), — безопасны: всегда можно вернуться назад. Команды, которые <b>переписывают</b> историю (rebase, reset --hard, push --force), — опасны. Пока вы не различаете эти два класса уверенно, пользуйтесь только первым. Его хватает на годы работы.
+    </div>
+  </section>
+
+  <!-- ===== GITLAB ===== -->
+  <section id="gitlab">
+    <div class="section-tag">Площадки</div>
+    <h2><span class="n">08</span>GitLab и GitHub: что меняется</h2>
+    <p class="sub" style="max-width:100%"><strong>Почти ничего.</strong> Git — это программа у вас на компьютере, а GitLab и GitHub — сайты, куда можно положить копию. Все команды из этого справочника работают одинаково на обеих площадках. Разница — в адресе, в том, как вы входите, и в названиях кнопок на сайте.</p>
+    <table>
+      <thead><tr><th></th><th>GitLab (внутренний)</th><th>GitHub (внешний)</th></tr></thead>
+      <tbody>
+        <tr><td class="term-cell">Команды git</td><td colspan="2" style="text-align:center">Полностью одинаковые</td></tr>
+        <tr><td class="term-cell">Адрес для clone</td><td><span style="font-family:var(--font-mono);font-size:.85rem">https://gitlab.company.ru/группа/проект.git</span></td><td><span style="font-family:var(--font-mono);font-size:.85rem">https://github.com/организация/проект.git</span></td></tr>
+        <tr><td class="term-cell">Как войти</td><td>Корпоративная учётная запись; для push — токен доступа вместо пароля</td><td>Вход через браузер из редактора</td></tr>
+        <tr><td class="term-cell">Предложить изменения</td><td><strong>Merge request</strong></td><td><strong>Pull request</strong></td></tr>
+        <tr><td class="term-cell">Группировка проектов</td><td>Группы и подгруппы</td><td>Организации</td></tr>
+        <tr><td class="term-cell">Что сюда можно класть</td><td>Рабочие материалы, фирменные шрифты и логотипы, внутренние регламенты</td><td><strong>Только обезличенное.</strong> Никаких реальных ФИО, выгрузок, внутренних ссылок, фирменных ресурсов</td></tr>
+      </tbody>
+    </table>
+    <div class="anchor">
+      <div class="lbl">Правило курса в одну строку</div>
+      <p style="margin:0"><strong>GitLab — это работа. GitHub — это полигон.</strong> На внешней площадке мы тренируемся и публикуем учебные артефакты по ссылке, поэтому туда идёт только обезличенное. Всё, что связано с реальными материалами, корпоративным стилем и внутренними документами, живёт во внутреннем контуре.</p>
+    </div>
+    <div class="insight">
+      <b>Практический вывод для вас как для человека, который учится:</b> не бойтесь, что «учили на одном, а на работе другое». Вы учите Git, а не сайт. Переход между площадками — это смена одной строки с адресом.
+    </div>
+  </section>
+
+  <!-- ===== ШПАРГАЛКА ===== -->
+  <section id="cheat">
+    <div class="section-tag">Распечатать и положить рядом</div>
+    <h2><span class="n">09</span>Шпаргалка одной страницей</h2>
+
+    <h3>Обычный рабочий цикл</h3>
+    <pre>git pull                       <span class="c"># забрал свежее перед началом</span>
+<span class="c"># ... работаете, правите файлы, агент что-то меняет ...</span>
+git status                     <span class="c"># что изменилось</span>
+git diff                       <span class="c"># что именно изменилось</span>
+git add .                      <span class="c"># выложил на стол</span>
+git commit -m <span class="k">"что сделал"</span>    <span class="c"># сделал снимок</span>
+git push                       <span class="c"># отправил</span></pre>
+
+    <h3>Все команды справочника</h3>
+    <table>
+      <thead><tr><th>Команда</th><th>Простыми словами</th><th>Кнопка в Cursor</th></tr></thead>
+      <tbody>
+        <tr><td class="term-cell">git status</td><td>Что сейчас происходит</td><td>Панель Source Control</td></tr>
+        <tr><td class="term-cell">git clone АДРЕС</td><td>Забрать пространство к себе</td><td>Git: Clone в палитре команд</td></tr>
+        <tr><td class="term-cell">git add .</td><td>Выложить на стол перед снимком</td><td>Плюс напротив файла</td></tr>
+        <tr><td class="term-cell">git commit -m "текст"</td><td>Сделать снимок с подписью</td><td>Поле сообщения + галочка Commit</td></tr>
+        <tr><td class="term-cell">git push</td><td>Отправить на сервер</td><td>Sync Changes / Publish Branch</td></tr>
+        <tr><td class="term-cell">git pull</td><td>Забрать свежее с сервера</td><td>Sync Changes</td></tr>
+        <tr><td class="term-cell">git log --oneline -10</td><td>Последние 10 снимков</td><td>Вкладка Graph / History</td></tr>
+        <tr><td class="term-cell">git diff</td><td>Что именно изменилось</td><td>Клик по файлу — сравнение</td></tr>
+        <tr><td class="term-cell">git restore ФАЙЛ</td><td>Вернуть файл как был</td><td>Значок разворота (Discard)</td></tr>
+        <tr><td class="term-cell">git restore --staged ФАЙЛ</td><td>Убрать со стола</td><td>Значок минуса</td></tr>
+        <tr><td class="term-cell">git revert ХЭШ</td><td>Отменить готовый коммит</td><td>—</td></tr>
+        <tr><td class="term-cell">git switch -c ИМЯ</td><td>Создать черновик и перейти</td><td>Имя ветки в левом нижнем углу</td></tr>
+        <tr><td class="term-cell">git switch main</td><td>Вернуться на основную</td><td>Там же</td></tr>
+        <tr><td class="term-cell">git merge ИМЯ</td><td>Свести черновик с основной</td><td>Чаще — merge request на сайте</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Четыре правила, которые важнее команд</h3>
+    <ol class="clean">
+      <li><strong>Перед тем как дать агенту задачу — сделайте коммит.</strong> Это ваша точка возврата.</li>
+      <li><strong>Коммит — не Ctrl+S.</strong> Фиксируйте законченный смысловой шаг, а не каждое сохранение файла.</li>
+      <li><strong>Сделал шаг — commit и push.</strong> Не в конце дня: до push работа существует только у вас.</li>
+      <li><strong>Если файл нельзя отправить внешнему подрядчику по почте</strong> — он не идёт ни в репозиторий, ни в чат с ИИ, ни на публикацию.</li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="section-tag">Если совсем застряли</div>
+    <p style="font-size:.97rem">Выполните <code>git status</code>, скопируйте весь вывод целиком и покажите его агенту в чате Cursor с вопросом «что происходит и что мне сделать». В стартовом пространстве для этого есть отдельный скилл — <span style="font-family:var(--font-mono)">git-helper</span>. Это, пожалуй, самый честный способ применения ИИ на первом уроке: инструмент объясняет вам собственную ошибку.</p>
+  </section>
+
+</div>
+</body>
+</html>

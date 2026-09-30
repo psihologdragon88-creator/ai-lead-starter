@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Пространство ИИ-лидера · МинИИстерство</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas:#F3F4F6;--surface:#FFFFFF;--ink:#1C1917;--secondary:#57534E;
+    --mute:#A8A29E;--line:#E7E5E4;--accent:#0F766E;--accent-soft:#CCFBF1;
+    --warn:#B45309;--warn-soft:#FEF3C7;--danger:#9F1239;--danger-soft:#FFE4E6;
+    --font-display:"Fraunces",Georgia,serif;
+    --font-body:"IBM Plex Sans",system-ui,sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--canvas);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1020px;margin:0 auto;padding:56px 32px 96px}
+  .meta-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:28px}
+  .meta-top .brand{color:var(--accent)}
+  h1{font-family:var(--font-display);font-size:clamp(2rem,4vw,2.9rem);font-weight:600;line-height:1.08;letter-spacing:-.02em;margin-bottom:14px}
+  .sub{font-size:1.1rem;color:var(--secondary);max-width:88%}
+  .sub strong{color:var(--ink);font-weight:600}
+  section{margin-top:50px;scroll-margin-top:20px}
+  .section-tag{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:16px;border-top:1px solid var(--line);padding-top:14px}
+  h2{font-family:var(--font-display);font-size:1.8rem;font-weight:600;line-height:1.15;letter-spacing:-.015em;margin:0 0 10px}
+  h2 .n{color:var(--accent);font-weight:700;margin-right:12px}
+  h3{font-size:1.02rem;font-weight:600;color:var(--accent);margin:26px 0 10px}
+  p{margin:10px 0;font-size:1rem;color:var(--secondary)}
+  p strong,td strong,li strong{color:var(--ink)}
+  code{font-family:var(--font-mono);font-size:.88em;background:var(--line);color:var(--ink);padding:1px 6px;border-radius:3px}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid #99F6E4}
+  a:hover{border-bottom-color:var(--accent)}
+  table{width:100%;border-collapse:collapse;margin-top:16px;font-size:.94rem;background:var(--surface)}
+  th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--accent);font-weight:600;font-size:.71rem;text-transform:uppercase;letter-spacing:.09em}
+  .term-cell{font-weight:600;color:var(--ink);white-space:nowrap}
+  ul.clean{list-style:none;margin-top:8px}
+  ul.clean li{position:relative;padding:5px 0 5px 20px;font-size:.98rem;color:var(--secondary)}
+  ul.clean li::before{content:"—";position:absolute;left:0;color:var(--accent);font-weight:700}
+  .chip{display:inline-block;padding:2px 9px;border-radius:4px;font-size:.72rem;font-weight:600;margin:2px 4px 0 0;white-space:nowrap}
+  .chip.teal{background:var(--accent-soft);color:var(--accent)}
+  .chip.warn{background:var(--warn-soft);color:var(--warn)}
+  .chip.mute{background:var(--line);color:var(--secondary)}
+  .insight{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:4px;padding:16px 18px;margin-top:16px;font-size:.99rem;color:var(--secondary)}
+  .insight b{color:var(--ink)}
+  .insight.warn{border-left-color:var(--warn)}
+  .insight.danger{border-left-color:var(--danger)}
+  .anchor{margin-top:16px;background:var(--accent-soft);border:1px solid #99F6E4;border-radius:8px;padding:16px 18px}
+  .anchor .lbl{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px}
+  .anchor p{color:#134E4A;margin:4px 0}
+  .anchor strong{color:var(--ink)}
+  pre{font-family:var(--font-mono);font-size:.85rem;line-height:1.75;background:#1C1917;color:#E7E5E4;border-radius:6px;padding:13px 16px;margin:10px 0;overflow-x:auto}
+  pre .c{color:#A8A29E}
+  pre .k{color:#5EEAD4}
+  .tree{font-family:var(--font-mono);font-size:.86rem;line-height:1.85;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:16px 18px;margin-top:16px;overflow-x:auto;white-space:pre;color:var(--ink)}
+  .tree .cm{color:var(--mute)}
+  .steps{counter-reset:s;list-style:none;margin-top:16px}
+  .steps li{position:relative;counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 20px 16px 58px;margin-top:10px}
+  .steps li::before{content:counter(s);position:absolute;left:18px;top:15px;font-family:var(--font-mono);font-weight:600;font-size:1.05rem;color:var(--accent)}
+  .steps .t{font-weight:600;color:var(--ink);font-size:1.01rem}
+  .steps .d{font-size:.95rem;color:var(--secondary);margin-top:4px}
+  .sk{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin-top:14px;border-left:3px solid var(--accent)}
+  .sk .n{font-family:var(--font-mono);font-size:1.02rem;font-weight:600;color:var(--ink)}
+  .sk .w{font-size:.97rem;color:var(--secondary);margin-top:6px}
+  .sk .w b{color:var(--ink)}
+  .sk .say{font-size:.93rem;color:#134E4A;background:#F0FDFA;border-radius:4px;padding:8px 12px;margin-top:10px}
+  .sk .say b{color:var(--accent)}
+  .growth{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}
+  .growth .g{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 14px}
+  .growth .g .u{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px}
+  .growth .g .x{font-size:.9rem;color:var(--secondary)}
+  @media (max-width:820px){
+    .wrap{padding:36px 18px 72px}
+    .growth{grid-template-columns:1fr}
+    .sub{max-width:100%}
+    h1{font-size:1.85rem}
+  }
+  @media print{body{background:#fff}.sk,.steps li,table{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="meta-top">
+    <span class="brand">МинИИстерство · этап 1</span>
+    <span>Пространство ИИ-лидера · v1.0</span>
+  </div>
+
+  <h1>Ваше рабочее пространство</h1>
+  <p class="sub">Это <strong>не учебная папка, которую выбрасывают после курса</strong>. Это заготовка вашего рабочего места: здесь лежат правила, готовые инструменты и справочники, и сюда же вы будете складывать всё, что соберёте за пять уроков.<br><br>Через месяц тут будет ваш собственный набор инструментов под вашу рутину. Сейчас — общий старт для всех.</p>
+
+  <div class="anchor">
+    <div class="lbl">Если вы открыли это впервые</div>
+    <p style="margin:0">Прочитайте раздел <strong>01 «С чего начать»</strong> — пять шагов, минут пятнадцать. Остальное можно смотреть по мере надобности.</p>
+  </div>
+
+  <!-- ===== 01 ===== -->
+  <section id="start">
+    <div class="section-tag">Первые пятнадцать минут</div>
+    <h2><span class="n">01</span>С чего начать</h2>
+    <ol class="steps">
+      <li>
+        <div class="t">Забрать пространство к себе</div>
+        <div class="d">Если вы читаете это в браузере на сайте репозитория — скопируйте адрес проекта и выполните в редакторе:</div>
+        <pre>git clone АДРЕС-РЕПОЗИТОРИЯ</pre>
+        <div class="d">В Cursor: палитра команд <code>Ctrl/Cmd+Shift+P</code> → <span class="mono">Git: Clone</span> → вставить адрес → выбрать, куда положить.</div>
+      </li>
+      <li>
+        <div class="t">Открыть папку в редакторе</div>
+        <div class="d"><code>File → Open Folder</code> → выбрать папку пространства. Дождитесь, пока редактор её проиндексирует — значок внизу справа перестанет крутиться.</div>
+      </li>
+      <li>
+        <div class="t">Заполнить, кто вы</div>
+        <div class="d">Откройте <code>AGENTS.md</code> в корне и впишите себя в верхний блок: имя, подразделение, рутину одной строкой. Это файл правил — агент читает его автоматически каждый раз, когда вы открываете папку.</div>
+      </li>
+      <li>
+        <div class="t">Описать свою рутину</div>
+        <div class="d">Откройте <code>README.md</code> в корне и замените раздел «Главное правило» на описание своей задачи: что делаете руками сейчас, как часто, сколько времени занимает, какой именно шаг хотите автоматизировать. Своими словами, коротко — пяти строк достаточно.</div>
+      </li>
+      <li>
+        <div class="t">Зафиксировать и отправить</div>
+        <div class="d">Это ваш первый вклад в пространство.</div>
+        <pre>git add .
+git commit -m <span class="k">"описал свою рутину"</span>
+git push</pre>
+        <div class="d">В Cursor: плюс напротив файлов → сообщение → <span class="mono">Commit</span> → <span class="mono">Sync Changes</span>.</div>
+      </li>
+    </ol>
+    <div class="insight">
+      <b>Если на любом шаге что-то пошло не так</b> — не зовите никого сразу. Откройте чат с агентом прямо в редакторе, вставьте текст ошибки и спросите, что делать. В пространстве для этого есть скилл <span style="font-family:var(--font-mono)">git-helper</span>: он переведёт ошибку на человеческий язык и даст безопасное решение. Это, кстати, и есть самое честное применение ИИ на первом уроке.
+    </div>
+  </section>
+
+  <!-- ===== 02 ===== -->
+  <section id="map">
+    <div class="section-tag">Что где лежит</div>
+    <h2><span class="n">02</span>Карта пространства</h2>
+    <div class="tree">пространство/
+├─ README.html            <span class="cm">← этот файл, для людей</span>
+├─ README.md              <span class="cm">← ваша рутина: заполняете на уроке 1</span>
+├─ AGENTS.md              <span class="cm">← правила, агент читает их всегда</span>
+├─ .gitignore             <span class="cm">← что никогда не уходит в репозиторий</span>
+├─ git-spravochnik.html   <span class="cm">← 12 команд Git, двойной клик</span>
+│
+└─ skills/                <span class="cm">готовые инструменты</span>
+   ├─ _shablon-SKILL.md      <span class="cm">заготовка для вашего навыка</span>
+   ├─ git-helper/
+   ├─ obezlichivanie/
+   └─ brand-presentation/</div>
+
+    <table>
+      <thead><tr><th>Что</th><th>Зачем</th></tr></thead>
+      <tbody>
+        <tr><td class="term-cell">README.md</td><td>Описание вашей рутины. Первое, что видит человек, открывший ваш репозиторий, — и то, по чему ведущий принимает домашку урока 1</td></tr>
+        <tr><td class="term-cell">AGENTS.md</td><td>Правила проекта, которые агент читает при каждом запуске. Он же — образец: на уроке 2 вы напишете такой под свой проект</td></tr>
+        <tr><td class="term-cell">git-spravochnik.html</td><td>12 команд с объяснениями, бытовыми аналогиями и указанием, какая это кнопка в Cursor. Плюс раздел «я сломал»</td></tr>
+        <tr><td class="term-cell">skills/</td><td>Инструменты, которые агент берёт сам, когда задача подходит. По папке на каждый. Там же заготовка, с которой начнётся ваш собственный</td></tr>
+        <tr><td class="term-cell">.gitignore</td><td>Фильтр: таблицы, документы, выгрузки и файлы с паролями в репозиторий не попадут, даже если вы про них забудете</td></tr>
+      </tbody>
+    </table>
+
+    <div class="insight">
+      <b>Здесь намеренно нет папок под вашу работу.</b> Папку своего навыка и журнал прогонов <span style="font-family:var(--font-mono)">runs/</span> вы создадите сами на уроке 2 — это часть занятия, а не то, что выдаётся готовым. Пустые папки с надписью «положите сюда своё» только загромождают вид.
+    </div>
+  </section>
+
+  <!-- ===== 03 ===== -->
+  <section id="skills">
+    <div class="section-tag">Работает прямо сейчас</div>
+    <h2><span class="n">03</span>Что здесь уже готово</h2>
+    <p>Три инструмента. Отдельно запускать их не нужно: агент сам понимает, что задача подходит, и берёт нужный. Достаточно описать задачу словами.</p>
+
+    <div class="sk">
+      <div class="n">git-helper</div>
+      <div class="w"><b>Объясняет, что случилось с репозиторием, и даёт безопасное решение.</b> Показываете ему текст ошибки — он переводит её на человеческий язык, объясняет причину и говорит, какую кнопку нажать в редакторе. Никогда не предложит команду, которая переписывает историю и может стоить вам работы.</div>
+      <div class="say"><b>Как позвать:</b> «вот ошибка, что делать» и вставить текст. Или просто «не понимаю, что происходит с репозиторием».</div>
+    </div>
+
+    <div class="sk">
+      <div class="n">obezlichivanie</div>
+      <div class="w"><b>Готовит рабочий файл к учебному использованию.</b> Находит ФИО, телефоны, логины, подразделения, суммы и внутренние ссылки, заменяет их на подстановки и выдаёт отчёт: что нашёл, что заменил, что осталось проверить глазами.</div>
+      <div class="say"><b>Как позвать:</b> «обезличь этот файл» или «можно ли это выкладывать».<br><b>Важно:</b> он готовит черновик, а не даёт гарантию. Ответственность за то, что уходит в репозиторий, остаётся на вас — поэтому он всегда пишет, что именно нужно досмотреть.</div>
+    </div>
+
+    <div class="sk">
+      <div class="n">brand-presentation</div>
+      <div class="w"><b>Оформляет презентации и документы по дизайн-системе вашей организации.</b> Сетка, типы слайдов, размеры шрифтов, шапки документов, правила работы с логотипом.<br><br>Это <b>заготовка, а не готовый скилл</b>: механика вёрстки одинакова почти в любой дизайн-системе, различаются только значения. В начале файла есть блок «Моя дизайн-система» — заполните его по своему брендбуку, и дальше скилл собирает материалы по вашим правилам.</div>
+      <div class="say"><b>Это ваше первое упражнение на адаптацию.</b> На уроке 2 вы будете собирать инструмент под себя — и здесь можно потренироваться заранее: меняете четыре строки в блоке §0 и получаете скилл под своё направление.</div>
+    </div>
+
+    <div class="insight warn">
+      <b>Про ассеты скилла презентаций.</b> Фирменные шрифты и логотипы — ресурсы организации, они не лежат в открытом доступе, поэтому папка <span style="font-family:var(--font-mono)">assets/</span> здесь пустая. Возьмите их у своих дизайнеров и положите туда сами. Без ассетов скилл продолжает работать как справочник: даёт правила, сетку и размеры, но вставить логотип и фирменный шрифт не сможет — используйте Arial.</div>
+  </section>
+
+  <!-- ===== 04 ===== -->
+  <section id="rules">
+    <div class="section-tag">Одно правило, которое важнее всех остальных</div>
+    <h2><span class="n">04</span>Данные</h2>
+    <div class="anchor">
+      <div class="lbl">Критерий на все случаи</div>
+      <p style="margin:0;font-size:1.08rem"><strong>Если этот файл нельзя отправить внешнему подрядчику по почте — он не идёт ни в репозиторий, ни в чат с ИИ, ни на публикацию.</strong></p>
+    </div>
+    <p style="margin-top:18px">Один критерий вместо списка из семи категорий. Список забывается к третьему уроку, критерий — нет.</p>
+
+    <h3>Что это значит на практике</h3>
+    <ul class="clean">
+      <li><strong>Файл, попавший в историю репозитория, остаётся в истории</strong> — даже если удалить его следующим действием. «Я потом уберу» не работает</li>
+      <li><strong>Всё, что вы опубликуете по ссылке на уроке 3</strong>, открывается у любого, у кого эта ссылка есть</li>
+      <li><strong>Единственный безопасный режим на весь курс — обезличенные данные.</strong> Ваша реальная рутина, но с вымышленными фамилиями, без номеров, сумм и внутренних ссылок</li>
+    </ul>
+
+    <h3>Что уже сделано за вас</h3>
+    <p>Файл <code>.gitignore</code> в корне настроен жёстко: таблицы, документы, выгрузки и файлы с паролями в репозиторий не попадут, даже если вы про них забудете.</p>
+    <p>Это страховка, а не замена внимательности: <code>.gitignore</code> работает лишь для файлов, которые <strong>ещё не попали</strong> в историю.</p>
+
+    <div class="insight danger">
+      <b>Если в репозиторий всё-таки уехало лишнее.</b> Порядок строго такой: <b>1)</b> если это пароль, ключ или токен — сначала смените его в системе, которая его выдала, он уже считается скомпрометированным; <b>2)</b> только потом чистите репозиторий; <b>3)</b> если это персональные данные — зафиксируйте факт и сообщите ответственному, не решайте в одиночку.<br><br>Разбор ситуации есть в справочнике, и <span style="font-family:var(--font-mono)">git-helper</span> знает этот порядок — можно спросить у него.
+    </div>
+  </section>
+
+  <!-- ===== 05 ===== -->
+  <section id="growth">
+    <div class="section-tag">Что здесь появится</div>
+    <h2><span class="n">05</span>Как пространство растёт вместе с курсом</h2>
+    <div class="growth">
+      <div class="g"><div class="u">Урок 1</div><div class="x">Склонировали пространство, описали свою рутину, сделали первый push</div></div>
+      <div class="g"><div class="u">Урок 2</div><div class="x">Появляется ваш собственный навык в <span style="font-family:var(--font-mono)">skills/</span> и заполненный <span style="font-family:var(--font-mono)">AGENTS.md</span></div></div>
+      <div class="g"><div class="u">Урок 3</div><div class="x">Данные приходят через API, артефакт публикуется по ссылке, исходник ложится сюда</div></div>
+      <div class="g"><div class="u">Урок 4</div><div class="x">Первый flow в Langflow: агент и один инструмент</div></div>
+      <div class="g"><div class="u">Урок 5</div><div class="x">Агентная система с ответами по документам, выгруженная в репозиторий</div></div>
+    </div>
+    <div class="insight">
+      <b>К концу этапа это ваше личное рабочее место, а не учебная папка.</b> Именно поэтому стоит с первого дня описывать здесь <b>настоящую</b> рутину, а не удобную учебную задачку: инструмент, собранный под выдуманную задачу, после курса никому не пригодится.
+    </div>
+  </section>
+
+  <!-- ===== 06 ===== -->
+  <section id="help">
+    <div class="section-tag">Куда смотреть</div>
+    <h2><span class="n">06</span>Если застряли</h2>
+    <table>
+      <thead><tr><th>Вопрос</th><th>Куда</th></tr></thead>
+      <tbody>
+        <tr><td>Что означает эта ошибка Git? Как откатить? Почему на сервере пусто?</td><td><code>git-spravochnik.html</code> — раздел «Я сломал». Или спросите агента: он возьмёт скилл <span style="font-family:var(--font-mono)">git-helper</span></td></tr>
+        <tr><td>Как писать свой навык?</td><td><code>skills/_shablon-SKILL.md</code> — заготовка и памятка по заполнению</td></tr>
+        <tr><td>Как должен выглядеть файл правил?</td><td><code>AGENTS.md</code> в корне — это и есть рабочий образец, с него и начинайте свой</td></tr>
+        <tr><td>Можно ли выкладывать этот файл?</td><td>Критерий в разделе 04. Сомневаетесь — «обезличь этот файл»</td></tr>
+      </tbody>
+    </table>
+    <div class="insight">
+      <b>И самое главное правило работы с агентом на этом курсе:</b> перед тем как дать ему задачу — сделайте коммит. Тогда, что бы он ни сделал с вашими файлами, откат занимает две секунды. Без коммита откатывать не к чему.
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
